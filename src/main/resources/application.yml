@@ -2,9 +2,9 @@ spring:
   datasource:
     initialization-mode: always
     driver-class-name: org.postgresql.Driver
-    url: jdbc:postgresql://192.168.56.11:5433/admin
-    username: admin
-    password: admin
+    url: jdbc:postgres://ektcefcritwnuz:9f9656ef5a107c3254ea338665d2d5ce5c78168cf3f29c28c77b52eb209e7ee7@ec2-35-174-56-18.compute-1.amazonaws.com:5432/d6vmi7443u3cm7
+    username: ektcefcritwnuz
+    password: 9f9656ef5a107c3254ea338665d2d5ce5c78168cf3f29c28c77b52eb209e7ee7
 
 server:
   port: 8080

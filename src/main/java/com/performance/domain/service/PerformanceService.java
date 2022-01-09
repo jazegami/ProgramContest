@@ -121,6 +121,9 @@ public class PerformanceService {
             int i = 0;
             // CSV分割用
             Pattern csvPtn = Pattern.compile(",");
+            
+            List<UserInfo> userInfoList = new ArrayList<UserInfo>();
+            List<UserHobby> userHobbyList = new ArrayList<UserHobby>();
             for(String line : csvFile) {
                 //カンマで分割した内容を配列に格納する
                 String[] data = csvPtn.split(line, -1);
@@ -163,11 +166,18 @@ public class PerformanceService {
                     log.info("データ書き込み" + i + "件目");
 
                     // DB登録時にidを取得するよう修正
-                    Long id = userDao.insertUserInfo(userInfo);
-                    userHobby.setId(id);
-                    userDao.insertUserHobby(userHobby);
+                    //Long id = userDao.insertUserInfo(userInfo);
+                    //userHobby.setId(id);
+                    //userDao.insertUserHobby(userHobby);
+                    userInfoList.add(userInfo);
+                    userHobbyList.add(userHobby);
                 }
             }
+            // まとめて登録
+            userDao.insertUserInfoAll(userInfoList);
+            List<Long> idList = userDao.selectIdList();
+            log.warn("取得件数：{}", idList.size());
+            userDao.insertUserHobbyAll(idList, userHobbyList);
 
         } catch (Exception e) {
             log.info("csv read error", e);

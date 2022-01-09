@@ -29,3 +29,6 @@ create table if not exists user_hobby (
     ,hobby4 varchar(256)
     ,hobby5 varchar(256)
 );
+
+create index id_index on user_master(id);
+create index name_index on user_master(last_name, first_name);

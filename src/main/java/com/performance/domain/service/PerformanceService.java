@@ -175,7 +175,7 @@ public class PerformanceService {
         // 対象情報取得
         UserMaster targetUserMaster = userDao.getTargetUserMaster();
         
-        // DBから検索する
+        // DBから検索する 
         List<UserMaster> userMasterList = userDao.searchUserMaster();
 
 
@@ -189,9 +189,10 @@ public class PerformanceService {
         targetHobbySet.add(targetUserMaster.getHobby4());
         targetHobbySet.add(targetUserMaster.getHobby5());
 
+
         for(UserMaster user : userMasterList) {
         	// 比較対象と同一データの場合のみスキップ
-        	if (user.getId() == targetUserMaster.getId()) {
+        	if (user.getId().equals(targetUserMaster.getId())) {
         		continue;
         	}
             // 同じ血液型ユーザー
@@ -223,6 +224,7 @@ public class PerformanceService {
                 }
             }
         }
+
         return matchingUserList;
     }
 

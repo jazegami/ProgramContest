@@ -72,9 +72,9 @@ public class UserDao {
     
     public UserMaster getTargetUserMaster() {
         String sql = "SELECT id, last_name, first_name, prefectures, city, blood_type, ";
-        sql = sql + "hobby1, hobby2, hobby3, hobby4, hobby5)　";
+        sql = sql + "hobby1, hobby2, hobby3, hobby4, hobby5 ";
         sql = sql + "FROM user_master ";
-        sql = sql + "WHERE last_name = " + "'試験'　";
+        sql = sql + "WHERE last_name = " + "'試験' ";
         sql = sql + "AND first_name = " + "'太郎'";
         RowMapper<UserMaster> mapper = new BeanPropertyRowMapper<UserMaster>(UserMaster.class);
         return jdbcTemplate.queryForObject(sql, mapper);
@@ -82,8 +82,8 @@ public class UserDao {
     
     public List<UserMaster> searchUserMaster() {
         String sql = "SELECT id, last_name, first_name, prefectures, city, blood_type, ";
-        sql = sql + "hobby1, hobby2, hobby3, hobby4, hobby5)　";
-        sql = sql + "FROM user_master ";
+        sql = sql + "hobby1, hobby2, hobby3, hobby4, hobby5 ";
+        sql = sql + "FROM user_master";
         sql = sql + " ORDER BY id";
         RowMapper<UserMaster> mapper = new BeanPropertyRowMapper<UserMaster>(UserMaster.class);
         return jdbcTemplate.query(sql, mapper);
@@ -202,7 +202,7 @@ public class UserDao {
     }
     
     public int searchCount() {
-        String sql = "SELECT COUNT(*) FROM user_info";
+        String sql = "SELECT COUNT(*) FROM user_master";
         
         return jdbcTemplate.queryForObject(sql, Integer.class);
     }

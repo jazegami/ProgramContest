@@ -13,6 +13,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import com.performance.domain.entity.UserHobby;
 import com.performance.domain.entity.UserInfo;
+import com.performance.domain.entity.UserMaster;
 
 @Repository
 public class UserDao {
@@ -39,6 +40,54 @@ public class UserDao {
         return jdbcTemplate.queryForObject(sql, Long.class);
     }
     */
+    
+    public void insertUserMasterAll (List<UserMaster> entity) {
+        String sql = "INSERT INTO user_master (last_name, first_name, prefectures, city, blood_type,";
+        sql = sql + " hobby1, hobby2, hobby3, hobby4, hobby5)";
+        sql = sql + " VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
+        
+        jdbcTemplate.batchUpdate(sql, new BatchPreparedStatementSetter() {
+        	
+        	@Override
+            public void setValues(PreparedStatement ps, int i) throws SQLException {
+        		UserMaster master = entity.get(i);
+                ps.setString(1, master.getLastName());
+                ps.setString(2, master.getFirstName());
+                ps.setString(3, master.getPrefectures());
+                ps.setString(4, master.getCity());
+                ps.setString(5, master.getBloodType());
+                ps.setString(6, master.getHobby1());
+                ps.setString(7, master.getHobby2());
+                ps.setString(8, master.getHobby3());
+                ps.setString(9, master.getHobby4());
+                ps.setString(10, master.getHobby5());
+            }
+        	
+        	@Override
+            public int getBatchSize() {
+                return entity.size();
+            }
+        });
+    }
+    
+    public UserMaster getTargetUserMaster() {
+        String sql = "SELECT id, last_name, first_name, prefectures, city, blood_type, ";
+        sql = sql + "hobby1, hobby2, hobby3, hobby4, hobby5)";
+        sql = sql + "FROM user_master ";
+        sql = sql + "WHERE last_name = " + "'試験'";
+        sql = sql + "AND first_name = " + "'太郎'";
+        RowMapper<UserMaster> mapper = new BeanPropertyRowMapper<UserMaster>(UserMaster.class);
+        return jdbcTemplate.queryForObject(sql, mapper);
+    }
+    
+    public List<UserMaster> searchUserMaster() {
+        String sql = "SELECT id, last_name, first_name, prefectures, city, blood_type, ";
+        sql = sql + "hobby1, hobby2, hobby3, hobby4, hobby5)";
+        sql = sql + "FROM user_master ";
+        sql = sql + " ORDER BY id";
+        RowMapper<UserMaster> mapper = new BeanPropertyRowMapper<UserMaster>(UserMaster.class);
+        return jdbcTemplate.query(sql, mapper);
+    }
     
     public void insertUserInfoAll (List<UserInfo> entity) {
         String sql = "INSERT INTO user_info (last_name, first_name, prefectures, city, blood_type)";
@@ -165,6 +214,11 @@ public class UserDao {
     
     public void truncateUserHobby() {
         String sql = "TRUNCATE TABLE user_hobby";
+        jdbcTemplate.execute(sql);
+    }
+    
+    public void truncateUserMaster() {
+        String sql = "TRUNCATE TABLE user_master";
         jdbcTemplate.execute(sql);
     }
     

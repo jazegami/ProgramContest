@@ -101,15 +101,15 @@ public class PerformanceService {
             while ((readLine = br.readLine()) != null) {
                 i++;
                 //データ内容をコンソールに表示する
-                log.info("-------------------------------");
+                log.debug("-------------------------------");
 
                 //データ件数を表示
-                log.info("データ読み込み" + i + "件目");
+                log.debug("データ読み込み" + i + "件目");
                 
                 csvFile.add(readLine);
             }
         } catch (Exception e) {
-            log.info("csv read error", e);
+            log.error("csv read error", e);
         } finally {
             try {
                 br.close();
@@ -128,7 +128,7 @@ public class PerformanceService {
                 //カンマで分割した内容を配列に格納する
                 String[] data = csvPtn.split(line, -1);
                 //データ内容をコンソールに表示する
-                log.info("-------------------------------");
+                log.debug("-------------------------------");
                 //データ件数を表示
                 //配列の中身を順位表示する。列数(=列名を格納した配列の要素数)分繰り返す
                 log.debug("ユーザー姓:" + data[1]);
@@ -163,7 +163,7 @@ public class PerformanceService {
                     userHobby.setHobby4(data[8]);
                     userHobby.setHobby5(data[9]);
 
-                    log.info("データ書き込み" + i + "件目");
+                    log.debug("データ書き込み" + i + "件目");
 
                     // DB登録時にidを取得するよう修正
                     //Long id = userDao.insertUserInfo(userInfo);
@@ -175,8 +175,16 @@ public class PerformanceService {
             }
             // まとめて登録
             userDao.insertUserInfoAll(userInfoList);
+            
+            Long start = System.currentTimeMillis();
+            
             List<UserInfo> idList = userDao.selectIdList();
-            log.warn("取得件数：" + idList.size());
+            
+            Long end = System.currentTimeMillis();
+            
+            log.info("取得件数：{}", idList.size());
+            log.info("取得にかかる時間：{}", end - start);
+            
             userDao.insertUserHobbyAll(idList, userHobbyList);
 
         } catch (Exception e) {
@@ -334,7 +342,7 @@ public class PerformanceService {
                 csvFile.add(readLine);
             }
         } catch (Exception e) {
-            log.info("csv read error", e);
+            log.error("csv read error", e);
         } finally {
             try {
                 br.close();

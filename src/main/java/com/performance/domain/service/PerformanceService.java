@@ -176,7 +176,7 @@ public class PerformanceService {
             // まとめて登録
             userDao.insertUserInfoAll(userInfoList);
             List<Long> idList = userDao.selectIdList();
-            log.warn("取得件数：{}", idList.size());
+            log.error("取得件数：" + idList.size());
             userDao.insertUserHobbyAll(idList, userHobbyList);
 
         } catch (Exception e) {

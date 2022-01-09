@@ -79,7 +79,6 @@ public class PerformanceService {
         // CSVを取得・CSVファイルをDBに登録する
         //ファイル読み込みで使用する3つのクラス
         BufferedReader br = null;
-        List<String> csvFile = new ArrayList<String>();
         try {
 
             //読み込みファイルのインスタンス生成
@@ -96,6 +95,14 @@ public class PerformanceService {
 
             //読み込み行数の管理
             int i = 0;
+            
+            // CSV分割用
+            Pattern csvPtn = Pattern.compile(",");
+            
+            // 登録有無判定用
+            Pattern pattern = Pattern.compile(".新潟県,上越市.");
+            
+            List<UserMaster> userMasterList = new ArrayList<UserMaster>();
 
             //1行ずつ読み込みを行う
             while ((readLine = br.readLine()) != null) {
@@ -106,28 +113,10 @@ public class PerformanceService {
                 //データ件数を表示
                 log.debug("データ読み込み" + i + "件目");
                 
-                csvFile.add(readLine);
-            }
-        } catch (Exception e) {
-            log.error("csv read error", e);
-        } finally {
-            try {
-                br.close();
-            } catch (Exception e) {
-            }
-        }
-
-        try {
-            int i = 0;
-            // CSV分割用
-            Pattern csvPtn = Pattern.compile(",");
-            
-            List<UserInfo> userInfoList = new ArrayList<UserInfo>();
-            List<UserHobby> userHobbyList = new ArrayList<UserHobby>();
-            for(String line : csvFile) {
                 //カンマで分割した内容を配列に格納する
-                String[] data = csvPtn.split(line, -1);
-                //データ内容をコンソールに表示する
+                String[] data = csvPtn.split(readLine, -1);
+                
+              //データ内容をコンソールに表示する
                 log.debug("-------------------------------");
                 //データ件数を表示
                 //配列の中身を順位表示する。列数(=列名を格納した配列の要素数)分繰り返す
@@ -142,26 +131,23 @@ public class PerformanceService {
                 log.debug("趣味4:" + data[8]);
                 log.debug("趣味5:" + data[9]);
 
-                // 特定の件のみインサートするようにする
-                Pattern pattern = Pattern.compile(".新潟県,上越市.");
-                Matcher matcher = pattern.matcher(line);
+                Matcher matcher = pattern.matcher(readLine);
                 if(matcher.find()) {
                     // 行数のインクリメント
                     i++;
                     
                     // インサートする場合のみ、値をセットする
-                    UserInfo userInfo = new UserInfo();
-                    UserHobby userHobby = new UserHobby();
-                    userInfo.setLastName(data[0]);
-                    userInfo.setFirstName(data[1]);
-                    userInfo.setPrefectures(data[2]);
-                    userInfo.setCity(data[3]);
-                    userInfo.setBloodType(data[4]);
-                    userHobby.setHobby1(data[5]);
-                    userHobby.setHobby2(data[6]);
-                    userHobby.setHobby3(data[7]);
-                    userHobby.setHobby4(data[8]);
-                    userHobby.setHobby5(data[9]);
+                    UserMaster userMaster = new UserMaster();
+                    userMaster.setLastName(data[0]);
+                    userMaster.setFirstName(data[1]);
+                    userMaster.setPrefectures(data[2]);
+                    userMaster.setCity(data[3]);
+                    userMaster.setBloodType(data[4]);
+                    userMaster.setHobby1(data[5]);
+                    userMaster.setHobby2(data[6]);
+                    userMaster.setHobby3(data[7]);
+                    userMaster.setHobby4(data[8]);
+                    userMaster.setHobby5(data[9]);
 
                     log.debug("データ書き込み" + i + "件目");
 
@@ -169,74 +155,29 @@ public class PerformanceService {
                     //Long id = userDao.insertUserInfo(userInfo);
                     //userHobby.setId(id);
                     //userDao.insertUserHobby(userHobby);
-                    userInfoList.add(userInfo);
-                    userHobbyList.add(userHobby);
+                    
+                    userMasterList.add(userMaster);
                 }
             }
             // まとめて登録
-            userDao.insertUserInfoAll(userInfoList);
+            userDao.insertUserMasterAll(userMasterList);
             
-            Long start = System.currentTimeMillis();
-            
-            List<UserInfo> idList = userDao.selectIdList();
-            
-            Long end = System.currentTimeMillis();
-            
-            log.info("取得件数：{}", idList.size());
-            log.info("取得にかかる時間：{}", end - start);
-            
-            userDao.insertUserHobbyAll(idList, userHobbyList);
-
         } catch (Exception e) {
             log.error("csv read error", e);
+        } finally {
+            try {
+                br.close();
+            } catch (Exception e) {
+            }
         }
-        // 対象情報取得
-        UserInfo targetUserInfo = userDao.getTargetUserInfo();
-        UserHobby targetUserHobby = userDao.getTargetUserHobby(targetUserInfo);
-        UserMaster targetUserMaster = new UserMaster();
+
         
-        targetUserMaster.setId(targetUserInfo.getId());
-        targetUserMaster.setLastName(targetUserInfo.getLastName());
-        targetUserMaster.setFirstName(targetUserInfo.getFirstName());
-        targetUserMaster.setPrefectures(targetUserInfo.getPrefectures());
-        targetUserMaster.setCity(targetUserInfo.getCity());
-        targetUserMaster.setBloodType(targetUserInfo.getBloodType());
-        targetUserMaster.setHobby1(targetUserHobby.getHobby1());
-        targetUserMaster.setHobby2(targetUserHobby.getHobby2());
-        targetUserMaster.setHobby3(targetUserHobby.getHobby3());
-        targetUserMaster.setHobby4(targetUserHobby.getHobby4());
-        targetUserMaster.setHobby5(targetUserHobby.getHobby5());
+        // 対象情報取得
+        UserMaster targetUserMaster = userDao.getTargetUserMaster();
         
         // DBから検索する
-        List<UserInfo> userInfoList = userDao.searchUserInfo();
-        List<UserHobby> userHobbyList = userDao.searchUserHobby(targetUserHobby);
-        
-        List<UserMaster> userMasterList = new ArrayList<UserMaster>();
+        List<UserMaster> userMasterList = userDao.searchUserMaster();
 
-        // それぞれのリストサイズを事前に取得
-        int infoListSize = userInfoList.size();
-        int hobbyListSize = userHobbyList.size();
-        
-        for(int i = 0; i < infoListSize; i++) {
-            UserMaster userMaster = new UserMaster();
-            userMaster.setId(userInfoList.get(i).getId());
-            userMaster.setLastName(userInfoList.get(i).getLastName());
-            userMaster.setFirstName(userInfoList.get(i).getFirstName());
-            userMaster.setPrefectures(userInfoList.get(i).getPrefectures());
-            userMaster.setCity(userInfoList.get(i).getCity());
-            userMaster.setBloodType(userInfoList.get(i).getBloodType());
-            for(int j = 0; j < hobbyListSize; j++) {
-                if(userMaster.getId().equals(userHobbyList.get(j).getId())) {
-                    userMaster.setHobby1(userHobbyList.get(j).getHobby1());
-                    userMaster.setHobby2(userHobbyList.get(j).getHobby2());
-                    userMaster.setHobby3(userHobbyList.get(j).getHobby3());
-                    userMaster.setHobby4(userHobbyList.get(j).getHobby4());
-                    userMaster.setHobby5(userHobbyList.get(j).getHobby5());
-                    break;
-                }
-            }
-            userMasterList.add(userMaster);
-        }
 
         List<UserMaster> matchingUserList = new ArrayList<UserMaster>();
 
@@ -249,6 +190,10 @@ public class PerformanceService {
         targetHobbySet.add(targetUserMaster.getHobby5());
 
         for(UserMaster user : userMasterList) {
+        	// 比較対象と同一データの場合のみスキップ
+        	if (user.getId() == targetUserMaster.getId()) {
+        		continue;
+        	}
             // 同じ血液型ユーザー
             if(user.getBloodType().equals(targetUserMaster.getBloodType())) {
                 // 趣味1に同じ趣味を持っているユーザー
@@ -285,6 +230,7 @@ public class PerformanceService {
     public void truncateTable() {
         userDao.truncateUserInfo();
         userDao.truncateUserHobby();
+        userDao.truncateUserMaster();
     }
 
     public Long referenceExecuteTime(String uuid) {

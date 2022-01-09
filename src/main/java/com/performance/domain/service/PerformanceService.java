@@ -175,12 +175,12 @@ public class PerformanceService {
             }
             // まとめて登録
             userDao.insertUserInfoAll(userInfoList);
-            List<Long> idList = userDao.selectIdList();
-            log.error("取得件数：" + idList.size());
+            List<UserInfo> idList = userDao.selectIdList();
+            log.warn("取得件数：" + idList.size());
             userDao.insertUserHobbyAll(idList, userHobbyList);
 
         } catch (Exception e) {
-            log.info("csv read error", e);
+            log.error("csv read error", e);
         }
         // 対象情報取得
         UserInfo targetUserInfo = userDao.getTargetUserInfo();

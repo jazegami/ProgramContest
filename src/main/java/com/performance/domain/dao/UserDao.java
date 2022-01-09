@@ -76,7 +76,7 @@ public class UserDao {
         jdbcTemplate.execute(sql);
     }
     
-    public void insertUserHobbyAll (List<Long> idList ,List<UserHobby> entity) {
+    public void insertUserHobbyAll (List<UserInfo> idList ,List<UserHobby> entity) {
         String sql = "INSERT INTO user_hobby (id, hobby1, hobby2, hobby3, hobby4, hobby5)";
         sql = sql + " VALUES (?, ?, ?, ?, ?, ?)";
         
@@ -85,7 +85,7 @@ public class UserDao {
         	@Override
             public void setValues(PreparedStatement ps, int i) throws SQLException {
         		UserHobby hobby = entity.get(i);
-                ps.setLong(1, idList.get(i));
+                ps.setLong(1, idList.get(i).getId());
                 ps.setString(2, hobby.getHobby1());
                 ps.setString(3, hobby.getHobby2());
                 ps.setString(4, hobby.getHobby3());
@@ -109,11 +109,12 @@ public class UserDao {
         return jdbcTemplate.queryForObject(sql, Long.class);
     }
     
-    public List<Long> selectIdList() {
+    public List<UserInfo> selectIdList() {
         String sql = "SELECT id ";
         sql = sql + "FROM user_info ";
         sql = sql + " ORDER BY id";
-        return jdbcTemplate.queryForObject(sql, List.class);
+        RowMapper<UserInfo> mapper = new BeanPropertyRowMapper<UserInfo>(UserInfo.class);
+        return jdbcTemplate.query(sql, mapper);
     }
 
     public List<UserInfo> searchUserInfo() {

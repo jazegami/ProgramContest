@@ -28,3 +28,4 @@ create table if not exists user_hobby (
     ,hobby3 varchar(256)
     ,hobby4 varchar(256)
     ,hobby5 varchar(256)
+);

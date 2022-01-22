@@ -84,7 +84,6 @@ public class UserDao {
         String sql = "SELECT id, last_name, first_name, prefectures, city, blood_type, ";
         sql = sql + "hobby1, hobby2, hobby3, hobby4, hobby5 ";
         sql = sql + "FROM user_master";
-        sql = sql + " ORDER BY id";
         RowMapper<UserMaster> mapper = new BeanPropertyRowMapper<UserMaster>(UserMaster.class);
         return jdbcTemplate.query(sql, mapper);
     }

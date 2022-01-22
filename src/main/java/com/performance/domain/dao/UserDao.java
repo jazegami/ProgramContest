@@ -20,6 +20,8 @@ public class UserDao {
 
     private JdbcTemplate jdbcTemplate;
     
+    final String INSERT_QUERY = "INSERT INTO user_master (last_name, first_name, prefectures, city, blood_type, hobby1, hobby2, hobby3, hobby4, hobby5) VALUES (?,?,?,?,?,?,?,?,?,?);";
+    
     public UserDao(JdbcTemplate jdbcTemplate) {
         this.jdbcTemplate = jdbcTemplate;
     }
@@ -68,6 +70,10 @@ public class UserDao {
                 return entity.size();
             }
         });
+    }
+    
+    public void insertUserMaster (List<Object[]> params) {
+        jdbcTemplate.batchUpdate(INSERT_QUERY, params);
     }
     
     public UserMaster getTargetUserMaster() {

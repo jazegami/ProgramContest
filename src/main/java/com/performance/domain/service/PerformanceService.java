@@ -102,7 +102,8 @@ public class PerformanceService {
             // 登録有無判定用
             Pattern pattern = Pattern.compile(".新潟県,上越市.");
             
-            List<UserMaster> userMasterList = new ArrayList<UserMaster>();
+            //List<UserMaster> userMasterList = new ArrayList<UserMaster>();
+            List<Object[]> csvFile = new ArrayList<Object[]>();
 
             //1行ずつ読み込みを行う
             while ((readLine = br.readLine()) != null) {
@@ -114,7 +115,8 @@ public class PerformanceService {
                 log.debug("データ読み込み" + i + "件目");
                 
                 //カンマで分割した内容を配列に格納する
-                String[] data = csvPtn.split(readLine, -1);
+                //String[] data = csvPtn.split(readLine, -1);
+                Object[] data = csvPtn.split(readLine, -1);
                 
               //データ内容をコンソールに表示する
                 log.debug("-------------------------------");
@@ -133,11 +135,10 @@ public class PerformanceService {
 
                 Matcher matcher = pattern.matcher(readLine);
                 if(matcher.find()) {
-                    // 行数のインクリメント
-                    i++;
                     
                     // インサートする場合のみ、値をセットする
-                    UserMaster userMaster = new UserMaster();
+                    /*   
+                    UserMaster userMaster = new UserMaster(); 
                     userMaster.setLastName(data[0]);
                     userMaster.setFirstName(data[1]);
                     userMaster.setPrefectures(data[2]);
@@ -148,6 +149,7 @@ public class PerformanceService {
                     userMaster.setHobby3(data[7]);
                     userMaster.setHobby4(data[8]);
                     userMaster.setHobby5(data[9]);
+                    */
 
                     log.debug("データ書き込み" + i + "件目");
 
@@ -156,11 +158,13 @@ public class PerformanceService {
                     //userHobby.setId(id);
                     //userDao.insertUserHobby(userHobby);
                     
-                    userMasterList.add(userMaster);
+                    //userMasterList.add(userMaster);
+                    csvFile.add(data);
                 }
             }
             // まとめて登録
-            userDao.insertUserMasterAll(userMasterList);
+            //userDao.insertUserMasterAll(userMasterList);
+            userDao.insertUserMaster(csvFile);
             
         } catch (Exception e) {
             log.error("csv read error", e);

@@ -8,8 +8,8 @@
         <version>2.3.7.RELEASE</version>
         <relativePath/> <!-- lookup parent from repository -->
     </parent>
-    <groupId>com.performance</groupId>
-    <artifactId>performance</artifactId>
+    <groupId>com.performance_fast</groupId>
+    <artifactId>performance_fast</artifactId>
     <version>0.0.1-SNAPSHOT</version>
     <name>demo</name>
     <description>performance improve</description>

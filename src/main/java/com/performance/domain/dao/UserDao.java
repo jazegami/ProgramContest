@@ -1,159 +1,43 @@
 package com.performance.domain.dao;
 
-import java.sql.PreparedStatement;
-import java.sql.SQLException;
 import java.util.List;
-
-import org.springframework.jdbc.core.BatchPreparedStatementSetter;
 import org.springframework.jdbc.core.BeanPropertyRowMapper;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.RowMapper;
 import org.springframework.stereotype.Repository;
-import org.springframework.transaction.annotation.Transactional;
-
-import com.performance.domain.entity.UserHobby;
-import com.performance.domain.entity.UserInfo;
+import com.performance.domain.entity.UserMaster;
 
 @Repository
 public class UserDao {
 
     private JdbcTemplate jdbcTemplate;
     
+    final String INSERT_QUERY = "INSERT INTO user_master (last_name, first_name, prefectures, city, blood_type, hobby1, hobby2, hobby3, hobby4, hobby5) VALUES (?,?,?,?,?,?,?,?,?,?);";
+    
+    final String SEARCH_USER_QUERY = "SELECT id, last_name, first_name, prefectures, city, blood_type, hobby1, hobby2, hobby3, hobby4, hobby5 FROM user_master WHERE last_name <> '試験';";
+    
+    final String SEARCH_TARGET_QUERY = "SELECT id, last_name, first_name, prefectures, city, blood_type, hobby1, hobby2, hobby3, hobby4, hobby5 FROM user_master WHERE last_name = '試験' AND first_name = '太郎';";
+    
     public UserDao(JdbcTemplate jdbcTemplate) {
         this.jdbcTemplate = jdbcTemplate;
     }
 
-    /*
-    @Transactional
-    public Long insertUserInfo (UserInfo entity) {
-        String sql = "INSERT INTO user_info (last_name, first_name, prefectures, city, blood_type)";
-        sql = sql + " VALUES (";
-        sql = sql + "'" + entity.getLastName() + "', ";
-        sql = sql + "'" + entity.getFirstName() + "', ";
-        sql = sql + "'" + entity.getPrefectures() + "', ";
-        sql = sql + "'" + entity.getCity() + "', ";
-        sql = sql + "'" + entity.getBloodType() + "') ";
-        // 主キーを取得できるように修正
-        sql = sql + "RETURNING id";
-        //jdbcTemplate.execute(sql);
-        return jdbcTemplate.queryForObject(sql, Long.class);
-    }
-    */
-    
-    public void insertUserInfoAll (List<UserInfo> entity) {
-        String sql = "INSERT INTO user_info (last_name, first_name, prefectures, city, blood_type)";
-        sql = sql + " VALUES (?, ?, ?, ?, ?)";
-        
-        jdbcTemplate.batchUpdate(sql, new BatchPreparedStatementSetter() {
-        	
-        	@Override
-            public void setValues(PreparedStatement ps, int i) throws SQLException {
-        		UserInfo info = entity.get(i);
-                ps.setString(1, info.getLastName());
-                ps.setString(2, info.getFirstName());
-                ps.setString(3, info.getPrefectures());
-                ps.setString(4, info.getCity());
-                ps.setString(5, info.getBloodType());
-            }
-        	
-        	@Override
-            public int getBatchSize() {
-                return entity.size();
-            }
-        });
-    }
-    
-    @Transactional
-    public void insertUserHobby (UserHobby entity) {
-        String sql = "INSERT INTO user_hobby (id, hobby1, hobby2, hobby3, hobby4, hobby5)";
-        sql = sql + " VALUES (";
-        sql = sql + "'" + entity.getId() + "', ";
-        sql = sql + "'" + entity.getHobby1() + "', ";
-        sql = sql + "'" + entity.getHobby2() + "', ";
-        sql = sql + "'" + entity.getHobby3() + "', ";
-        sql = sql + "'" + entity.getHobby4() + "', ";
-        sql = sql + "'" + entity.getHobby5() + "')";
-        jdbcTemplate.execute(sql);
-    }
-    
-    public void insertUserHobbyAll (List<UserInfo> idList ,List<UserHobby> entity) {
-        String sql = "INSERT INTO user_hobby (id, hobby1, hobby2, hobby3, hobby4, hobby5)";
-        sql = sql + " VALUES (?, ?, ?, ?, ?, ?)";
-        
-        jdbcTemplate.batchUpdate(sql, new BatchPreparedStatementSetter() {
-        	
-        	@Override
-            public void setValues(PreparedStatement ps, int i) throws SQLException {
-        		UserHobby hobby = entity.get(i);
-                ps.setLong(1, idList.get(i).getId());
-                ps.setString(2, hobby.getHobby1());
-                ps.setString(3, hobby.getHobby2());
-                ps.setString(4, hobby.getHobby3());
-                ps.setString(5, hobby.getHobby4());
-                ps.setString(6, hobby.getHobby5());
-            }
-        	
-        	@Override
-            public int getBatchSize() {
-                return entity.size();
-            }
-        });
-    }
-    
-    public Long selectId(UserInfo entity) {
-        String sql = "SELECT id ";
-        sql = sql + "FROM user_info ";
-        sql = sql + "WHERE last_name || first_name = " + "'" + entity.getLastName() + entity.getFirstName() + "'";
-        sql = sql + " ORDER BY id desc";
-        sql = sql + " LIMIT 1";
-        return jdbcTemplate.queryForObject(sql, Long.class);
-    }
-    
-    public List<UserInfo> selectIdList() {
-        String sql = "SELECT id ";
-        sql = sql + "FROM user_info ";
-        sql = sql + " ORDER BY id";
-        RowMapper<UserInfo> mapper = new BeanPropertyRowMapper<UserInfo>(UserInfo.class);
-        return jdbcTemplate.query(sql, mapper);
+    public void insertUserMaster (List<Object[]> params) {
+        jdbcTemplate.batchUpdate(INSERT_QUERY, params);
     }
 
-    public List<UserInfo> searchUserInfo() {
-        String sql = "SELECT id, last_name, first_name, prefectures, city, blood_type ";
-        sql = sql + "FROM user_info ";
-        sql = sql + "WHERE last_name || first_name <> " + "'試験太郎'";
-        sql = sql + " ORDER BY id";
-        RowMapper<UserInfo> mapper = new BeanPropertyRowMapper<UserInfo>(UserInfo.class);
-        return jdbcTemplate.query(sql, mapper);
-    }
-
-    public List<UserHobby> searchUserHobby(UserHobby targetUserHobby) {
-        String sql = "SELECT id, hobby1, hobby2, hobby3, hobby4, hobby5 ";
-        sql = sql + "FROM user_hobby ";
-        sql = sql + "WHERE id  <> " + targetUserHobby.getId();
-        sql = sql + " ORDER BY id";
-        RowMapper<UserHobby> mapper = new BeanPropertyRowMapper<UserHobby>(UserHobby.class);
-        return jdbcTemplate.query(sql, mapper);
+    public List<UserMaster> searchUser(UserMaster targetUserMaster) {
+        RowMapper<UserMaster> mapper = new BeanPropertyRowMapper<UserMaster>(UserMaster.class);
+        return jdbcTemplate.query(SEARCH_USER_QUERY, mapper);
     }
     
-    public UserInfo getTargetUserInfo() {
-        String sql = "SELECT id, last_name, first_name, prefectures, city, blood_type ";
-        sql = sql + "FROM user_info ";
-        sql = sql + "WHERE last_name = " + "'試験'";
-        sql = sql + "AND first_name = " + "'太郎'";
-        RowMapper<UserInfo> mapper = new BeanPropertyRowMapper<UserInfo>(UserInfo.class);
-        return jdbcTemplate.queryForObject(sql, mapper);
-    }
-    
-    public UserHobby getTargetUserHobby(UserInfo userInfo) {
-        String sql = "SELECT id, hobby1, hobby2, hobby3, hobby4, hobby5 ";
-        sql = sql + "FROM user_hobby ";
-        sql = sql + "WHERE id = " + userInfo.getId();
-        RowMapper<UserHobby> mapper = new BeanPropertyRowMapper<UserHobby>(UserHobby.class);
-        return jdbcTemplate.queryForObject(sql, mapper);
+    public UserMaster getTargetUser() {
+        RowMapper<UserMaster> mapper = new BeanPropertyRowMapper<UserMaster>(UserMaster.class);
+        return jdbcTemplate.queryForObject(SEARCH_TARGET_QUERY, mapper);
     }
     
     public int searchCount() {
-        String sql = "SELECT COUNT(*) FROM user_info";
+        String sql = "SELECT COUNT(*) FROM user_master";
         
         return jdbcTemplate.queryForObject(sql, Integer.class);
     }
@@ -168,4 +52,8 @@ public class UserDao {
         jdbcTemplate.execute(sql);
     }
     
+    public void truncateUserMaster() {
+        String sql = "TRUNCATE TABLE user_master";
+        jdbcTemplate.execute(sql);
+    }
 }

@@ -4,7 +4,6 @@
   <meta charset="UTF-8">
   <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
   <script type="text/javascript">
-    <!--
     $(function() {
         $.ajaxSetup({
             headers: {
@@ -97,7 +96,7 @@
 <body>
     <div>
         <form role="form" th:action="@{/execute}" method="post" id="executeForm" th:object="${performanceForm}">
-            <button type="button" class="btn btn-default" id="btnTestExecute">試験実行</button>
+            <button type="button" class="btn btn-default" id="btnTestExecute">試験実行です</button>
             <button type="button" class="btn btn-default" id="btnExecute">計測実行</button>
             <input type="hidden" class="form-control" name="measureFlag" id="measureFlag" value="">
         </form>

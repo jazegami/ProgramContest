@@ -60,7 +60,7 @@ public class PerformanceController {
 
         String message = null;
         if(executeTime == null) {
-            message = "まだ実行中みたいです。";
+            message = "まだ実行中みたいです。test";
         }
         String resultMessage = null;
         if(assertionResult != null) {

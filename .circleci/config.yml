@@ -6,7 +6,6 @@ jobs:
   deploy-heroku:
     docker:
       - image: buildpack-deps:trusty
-    executor: heroku/default
     steps:
       - checkout # push/mergeされたコードのチェック
       - run:
@@ -19,7 +18,5 @@ workflows:
     jobs:
       - maven/test # checkout, build, test, and upload test results
       - deploy-heroku:
-        requires:
-          - maven/test
-
-        
+          requires:
+            - maven/test

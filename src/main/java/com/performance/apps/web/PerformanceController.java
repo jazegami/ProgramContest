@@ -39,7 +39,7 @@ public class PerformanceController {
         String message = null;
         try {
             service.execute(uuid, measureFlag);
-            message = "非同期にて処理を実行しています。処理結果は結果参照ボタンから取得してください。aa";
+            message = "非同期にて処理を実行しています。処理結果は結果参照ボタンから取得してください。";
         } catch (TaskRejectedException e) {
             log.info("非同期処理実行中");
             message = "非同期にて処理を実行中です。処理時間は結果参照ボタンから取得してください。";
